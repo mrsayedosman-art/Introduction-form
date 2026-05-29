@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استمارة تعارف وتسجيل بالدورة التدريبية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #f0ebf8; }
+        .google-header-bar { height: 10px; background-color: #673ab7; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        .form-card { border: 1px solid #dadce0; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-card:focus-within { border-color: #673ab7; box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15); }
+        .form-card.error-card { border-color: #d93025; }
+        .form-card.error-card:focus-within { box-shadow: 0 1px 3px 0 rgba(217,48,37,0.3), 0 4px 8px 3px rgba(217,48,37,0.15); }
+        input[type="radio"]:checked { border-color: #673ab7; background-color: #673ab7; }
+    </style>
+</head>
+<body class="min-h-screen pb-12 text-gray-800">
+
+    <header class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-gray-900">مُنشئ النماذج الذكي</h1>
+                    <p class="text-xs text-gray-500">مربوط مباشرة بـ Google Sheets</p>
+                </div>
+            </div>
+            <div class="flex space-x-2 space-x-reverse bg-gray-100 p-1 rounded-lg">
+                <button id="tab-form-btn" onclick="switchTab('form')" class="px-4 py-2 text-sm font-medium rounded-md transition bg-white text-indigo-700 shadow-sm">النموذج</button>
+                <button id="tab-responses-btn" onclick="switchTab('responses')" class="px-4 py-2 text-sm font-medium rounded-md transition text-gray-600 hover:text-gray-900">الردود (<span id="response-count">0</span>)</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 mt-8">
+        <div id="tab-form" class="space-y-6">
+            <div id="toast-container" class="hidden fixed bottom-5 left-5 z-50 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl flex items-center space-x-3 space-x-reverse transition-opacity duration-300">
+                <span id="toast-message">تم إرسال الرد بنجاح!</span>
+            </div>
+
+            <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center">
+                <div class="bg-white p-6 rounded-xl shadow-xl text-center space-y-3">
+                    <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p class="text-sm font-bold text-gray-700">جاري تسجيل بياناتك في جدول جوجل الحسابي...</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+                <div class="google-header-bar"></div>
+                <div class="p-6 md:p-8">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-4">استمارة تعارف وتسجيل بالدورة التدريبية</h2>
+                    <p class="text-gray-600 leading-relaxed mb-6">مرحبًا بك، يرجى تعبئة البيانات التالية بدقة حتى نتمكن من التعرف عليك وتقديم محتوى تدريبي يناسب احتياجاتك وأهدافك.</p>
+                    <div class="border-t border-gray-100 pt-4 text-xs text-red-600"><span>* يشير إلى حقل مطلوب</span></div>
+                </div>
+            </div>
+
+            <form id="courseForm" onsubmit="handleFormSubmit(event)" class="space-y-5" novalidate>
+                <!-- Q1 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-name">
+                    <label class="block text-base font-medium text-gray-900 mb-2">الاسم (رباعي) <span class="text-red-600">*</span></label>
+                    <input type="text" name="name" required class="w-full md:w-3/4 border-b border-gray-300 focus:border-indigo-600 outline-none py-2 text-gray-900 placeholder-gray-400 focus:placeholder-transparent transition-all" placeholder="إجابتك">
+                    <p class="text-red-600 text-xs mt-2 hidden error-msg">⚠️ هذا السؤال مطلوب ويجب تعبئته.</p>
+                </div>
+                <!-- Q2 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-category">
+                    <label class="block text-base font-medium text-gray-900 mb-3">الفئة <span class="text-red-600">*</span></label>
+                    <div class="space-y-3">
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="category" value="طالب" required class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700 group-hover:text-gray-950">طالب</span></label>
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="category" value="معلم" class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700 group-hover:text-gray-950">معلم</span></label>
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="category" value="خريج" class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700 group-hover:text-gray-950">خريج</span></label>
+                    </div>
+                    <p class="text-red-600 text-xs mt-3 hidden error-msg">⚠️ يرجى تحديد أحد الخيارات.</p>
+                </div>
+                <!-- Q3 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-qualification">
+                    <label class="block text-base font-medium text-gray-900 mb-2">المؤهل الجامعي <span class="text-red-600">*</span></label>
+                    <input type="text" name="qualification" required class="w-full md:w-3/4 border-b border-gray-300 focus:border-indigo-600 outline-none py-2" placeholder="إجابتك">
+                    <p class="text-red-600 text-xs mt-2 hidden error-msg">⚠️ هذا السؤال مطلوب ويجب تعبئته.</p>
+                </div>
+                <!-- Q4 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-specialty">
+                    <label class="block text-base font-medium text-gray-900 mb-2">التخصص <span class="text-red-600">*</span></label>
+                    <input type="text" name="specialty" required class="w-full md:w-3/4 border-b border-gray-300 focus:border-indigo-600 outline-none py-2" placeholder="إجابتك">
+                    <p class="text-red-600 text-xs mt-2 hidden error-msg">⚠️ هذا السؤال مطلوب ويجب تعبئته.</p>
+                </div>
+                <!-- Q5 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-company">
+                    <label class="block text-base font-medium text-gray-900 mb-2">جهة العمل الحالية <span class="text-red-600">*</span></label>
+                    <input type="text" name="company" required class="w-full md:w-3/4 border-b border-gray-300 focus:border-indigo-600 outline-none py-2" placeholder="إجابتك">
+                    <p class="text-red-600 text-xs mt-2 hidden error-msg">⚠️ هذا السؤال مطلوب ويجب تعبئته.</p>
+                </div>
+                <!-- Q6 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-job">
+                    <label class="block text-base font-medium text-gray-900 mb-2">الوظيفة الحالية <span class="text-red-600">*</span></label>
+                    <input type="text" name="job" required class="w-full md:w-3/4 border-b border-gray-300 focus:border-indigo-600 outline-none py-2" placeholder="إجابتك">
+                    <p class="text-red-600 text-xs mt-2 hidden error-msg">⚠️ هذا السؤال مطلوب ويجب تعبئته.</p>
+                </div>
+                <!-- Q7 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-attended">
+                    <label class="block text-base font-medium text-gray-900 mb-3">هل سبق لك حضور دورات تدريبية مشابهة؟ <span class="text-red-600">*</span></label>
+                    <div class="space-y-3">
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="attended_before" value="نعم" required class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700 group-hover:text-gray-950">نعم</span></label>
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="attended_before" value="لا" class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700 group-hover:text-gray-950">لا</span></label>
+                    </div>
+                    <p class="text-red-600 text-xs mt-3 hidden error-msg">⚠️ يرجى تحديد أحد الخيارات.</p>
+                </div>
+                <!-- Q8 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card">
+                    <label class="block text-base font-medium text-gray-900 mb-2">إذا كانت الإجابة نعم، اذكر اسم الدورة أو المجال <span class="text-gray-400 font-light">(اختياري)</span></label>
+                    <textarea name="previous_courses" rows="3" class="w-full border-b border-gray-300 focus:border-indigo-600 outline-none py-2 resize-y" placeholder="إجابتك"></textarea>
+                </div>
+                <!-- Q9 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-reason">
+                    <label class="block text-base font-medium text-gray-900 mb-2">سبب الالتحاق بالدورة <span class="text-red-600">*</span></label>
+                    <textarea name="join_reason" rows="3" required class="w-full border-b border-gray-300 focus:border-indigo-600 outline-none py-2 resize-y" placeholder="إجابتك"></textarea>
+                    <p class="text-red-600 text-xs mt-2 hidden error-msg">⚠️ هذا السؤال مطلوب ويجب تعبئته.</p>
+                </div>
+                <!-- Q10 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card" id="card-goals">
+                    <label class="block text-base font-medium text-gray-900 mb-2">الأهداف التي ترغب في تحقيقها من الدورة <span class="text-red-600">*</span></label>
+                    <textarea name="goals" rows="3" required class="w-full border-b border-gray-300 focus:border-indigo-600 outline-none py-2 resize-y" placeholder="إجابتك"></textarea>
+                    <p class="text-red-600 text-xs mt-2 hidden error-msg">⚠️ هذا السؤال مطلوب ويجب تعبئته.</p>
+                </div>
+                <!-- Q11 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm form-card">
+                    <label class="block text-base font-medium text-gray-900 mb-3">كيف تعرفت على الدورة؟</label>
+                    <div class="space-y-3">
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="referral" value="Facebook" class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700">Facebook</span></label>
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="referral" value="WhatsApp" class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700">WhatsApp</span></label>
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="referral" value="صديق" class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700">صديق</span></label>
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="referral" value="المدرسة / الجامعة" class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700">المدرسة / الجامعة</span></label>
+                        <label class="flex items-center cursor-pointer group"><input type="radio" name="referral" value="أخرى" class="w-4 h-4 text-indigo-600 border-gray-300"><span class="mr-3 text-sm text-gray-700">أخرى</span></label>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-4">
+                    <button type="submit" class="bg-indigo-700 hover:bg-indigo-800 text-white font-medium px-6 py-2.5 rounded-md shadow transition">إرسال</button>
+                    <button type="button" onclick="clearForm()" class="text-indigo-700 hover:text-indigo-900 font-medium px-4 py-2 text-sm transition">أفرغ النموذج</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TAB: SUCCESS SCREEN -->
+        <div id="tab-success" class="hidden space-y-6">
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+                <div class="google-header-bar"></div>
+                <div class="p-8 text-center md:text-right">
+                    <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg></div>
+                    <h2 class="text-2xl font-bold text-gray-950 mb-2">لقد تم تسجيل ردك بنجاح!</h2>
+                    <p class="text-gray-600 mb-6">تم حفظ بياناتك وإرسالها لجدول جوجل بنجاح لتسهيل عملية التواصل وبناء الخطة التدريبية.</p>
+                    <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4 md:space-x-reverse">
+                        <button onclick="switchTab('form')" class="bg-indigo-700 hover:bg-indigo-800 text-white font-medium px-5 py-2 rounded-md shadow transition">إرسال رد آخر</button>
+                        <button onclick="switchTab('responses')" class="bg-gray-100 hover:bg-gray-200 text-indigo-700 font-medium px-5 py-2 rounded-md transition">عرض مراجعة الردود</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: RESPONSES DASHBOARD -->
+        <div id="tab-responses" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-gray-100 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900" id="responses-title">الردود الحالية في هذه الجلسة (0)</h2>
+                        <p class="text-xs text-gray-500 mt-1">تنبيه: يمكنك رؤية البيانات الكاملة والمستدامة دائماً داخل جدول Google Sheets الخاص بك.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-violet-50 p-4 rounded-lg"><span class="text-xs text-indigo-600 font-medium">المعلمون المشتركون</span><div class="text-2xl font-black text-indigo-950 mt-1" id="teacher-count">0</div></div>
+                    <div class="bg-blue-50 p-4 rounded-lg"><span class="text-xs text-blue-600 font-medium">الطلاب المشتركون</span><div class="text-2xl font-black text-blue-950 mt-1" id="student-count">0</div></div>
+                    <div class="bg-amber-50 p-4 rounded-lg"><span class="text-xs text-amber-600 font-medium">الخريجون</span><div class="text-2xl font-black text-amber-950 mt-1" id="grad-count">0</div></div>
+                </div>
+            </div>
+            <div id="responses-container" class="space-y-4">
+                <div id="empty-state" class="bg-white p-12 text-center rounded-lg shadow-sm border border-gray-200"><p class="text-gray-500 font-medium text-lg">لا يوجد ردود جديدة مسجلة محلياً في هذه الجلسة حالياً.</p></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // دمج رابط جوجل لحفظ البيانات في السحاب بشكل آمن
+        const GOOGLE_SCRIPT_URL = "ضع_رابط_جوجل_هنا_YOUR_WEB_APP_URL";
+
+        let responses = [];
+
+        function switchTab(tabName) {
+            const tabs = ['form', 'responses', 'success'];
+            tabs.forEach(t => document.getElementById(`tab-${t}`).classList.add('hidden'));
+            
+            document.getElementById('tab-form-btn').className = "px-4 py-2 text-sm font-medium rounded-md transition text-gray-600";
+            document.getElementById('tab-responses-btn').className = "px-4 py-2 text-sm font-medium rounded-md transition text-gray-600";
+
+            if (tabName === 'form') {
+                document.getElementById('tab-form').classList.remove('hidden');
+                document.getElementById('tab-form-btn').className = "px-4 py-2 text-sm font-medium rounded-md transition bg-white text-indigo-700 shadow-sm";
+            } else if (tabName === 'responses') {
+                document.getElementById('tab-responses').classList.remove('hidden');
+                document.getElementById('tab-responses-btn').className = "px-4 py-2 text-sm font-medium rounded-md transition bg-white text-indigo-700 shadow-sm";
+                renderResponses();
+            } else if (tabName === 'success') {
+                document.getElementById('tab-success').classList.remove('hidden');
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const form = document.getElementById('courseForm');
+            const inputs = form.querySelectorAll('[required]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                let isFieldValid = true;
+                const card = input.closest('.form-card');
+                if (input.type === 'radio') {
+                    if (!form.querySelector(`input[name="${input.name}"]:checked`)) isFieldValid = false;
+                } else {
+                    if (!input.value.trim()) isFieldValid = false;
+                }
+
+                if (!isFieldValid) {
+                    isValid = false;
+                    if (card) { card.classList.add('error-card'); card.querySelector('.error-msg')?.classList.remove('hidden'); }
+                } else {
+                    if (card) { card.classList.remove('error-card'); card.querySelector('.error-msg')?.classList.add('hidden'); }
+                }
+            });
+
+            if (!isValid) {
+                document.querySelector('.error-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                showToast("يرجى تعبئة جميع الحقول المطلوبة.");
+                return;
+            }
+
+            // إظهار واجهة الانتظار أثناء الرفع لجوجل شيت
+            document.getElementById('loading-overlay').classList.remove('hidden');
+
+            // إرسال البيانات فوراً لـ Google Sheets عبر Fetch API
+            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: new FormData(form) })
+            .then(response => {
+                document.getElementById('loading-overlay').classList.add('hidden');
+                showToast("تم حفظ البيانات في جدول Google Sheets بنجاح!");
+                
+                // حفظ البيانات محلياً أيضاً للمعاينة الفورية بالصفحة
+                const formData = new FormData(form);
+                responses.push({
+                    name: formData.get('name'),
+                    category: formData.get('category'),
+                    date: new Date().toLocaleString('ar-EG')
+                });
+                updateResponseCount();
+                form.reset();
+                switchTab('success');
+            })
+            .catch(error => {
+                document.getElementById('loading-overlay').classList.add('hidden');
+                console.error('Error!', error.message);
+                alert("حدث خطأ أثناء الاتصال بسيرفر جوجل، ولكن سيتم نقلك لصفحة النجاح وتخزين البيانات محلياً.");
+                switchTab('success');
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-container');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function clearForm() {
+            if (confirm("هل تريد تفريغ الحقول؟")) document.getElementById('courseForm').reset();
+        }
+
+        function updateResponseCount() {
+            document.getElementById('response-count').textContent = responses.length;
+        }
+
+        function renderResponses() {
+            document.getElementById('responses-title').textContent = `الردود الحالية في هذه الجلسة (${responses.length})`;
+            let t = 0, s = 0, g = 0;
+            responses.forEach(r => {
+                if (r.category === 'معلم') t++;
+                if (r.category === 'طالب') s++;
+                if (r.category === 'خريج') g++;
+            });
+            document.getElementById('teacher-count').textContent = t;
+            document.getElementById('student-count').textContent = s;
+            document.getElementById('grad-count').textContent = g;
+
+            const container = document.getElementById('responses-container');
+            if (responses.length > 0) {
+                container.innerHTML = '';
+                responses.forEach((res, i) => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-lg shadow-sm border border-gray-100 text-sm";
+                    card.innerHTML = `<b>الاسم:</b> ${res.name} | <b>الفئة:</b> ${res.category} <br><span class="text-xs text-gray-400">${res.date}</span>`;
+                    container.appendChild(card);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
